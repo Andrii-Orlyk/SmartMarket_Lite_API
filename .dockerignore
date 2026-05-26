@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+.git/
+.github/
+.vs/
+.vscode/
+.idea/
+.env
+.env.*
+TestResults/
+coverage/
+coverage-report/
+logs/
+*.log
+.DS_Store

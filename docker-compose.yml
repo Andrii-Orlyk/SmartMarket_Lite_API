@@ -1,0 +1,39 @@
+services:
+  smartmarket-api:
+    build:
+      context: .
+      dockerfile: src/SmartMarket.Api/Dockerfile
+    container_name: smartmarket-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=smartmarket-db;Port=5432;Database=smartmarket;Username=postgres;Password=postgres
+      Jwt__Issuer: SmartMarket.Api
+      Jwt__Audience: SmartMarket.Client
+      Jwt__Key: CHANGE_ME_USE_A_LONG_RANDOM_SECRET_KEY_32_CHARS_MIN
+      Jwt__ExpirationMinutes: 60
+    ports:
+      - "5000:8080"
+    depends_on:
+      smartmarket-db:
+        condition: service_healthy
+
+  smartmarket-db:
+    image: postgres:16
+    container_name: smartmarket-db
+    environment:
+      POSTGRES_DB: smartmarket
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - smartmarket_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d smartmarket"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  smartmarket_postgres_data:
